@@ -45,17 +45,28 @@ let stars;
 function create() {
 
   this.add.image(400, 300, 'sky');
+  boundingPlatforms = this.physics.add.staticGroup();
   platforms = this.physics.add.staticGroup();
   platforms.create(400, 568, 'ground').setScale(2).refreshBody();
-  // console.log(platforms)
 
   player = this.physics.add.sprite(100, 450, 'dude');
 
   player.setBounce(0.2);
   player.setCollideWorldBounds(true);
-  player.body.setGravityY(200)
+  player.body.setGravityY(200);
+
   console.log(player.displayWidth);
-  renderPlatforms(4, player, this)
+  renderPlatforms(12, player, this).forEach(function(item){
+    console.log(item)
+    platforms.create(item.x, item.y, 'ground');
+  })
+
+  this.physics.add.overlap(boundingPlatforms, platforms, function(bounding, visible){
+    platforms.remove(visible, true, true)
+    boundingPlatforms.remove(bounding, true, true)
+    console.log("Hello")
+  })
+
   this.anims.create({
     key: 'left',
     frames: this.anims.generateFrameNumbers('dude', { start: 0, end: 3 }),
@@ -123,6 +134,8 @@ function update() {
       physics.moveToObject(bomb, player, ENEMY_VELOCITY)
     }
   })
+
+  //renderPlatforms(4, player, this)
 }
 
 function startPlayerMovement() {
@@ -192,46 +205,29 @@ function generateRandXY(){
 function generateVectors(vectorCount){
   let vectorArr = [];
   for (let i = 0; i < vectorCount; i++) {
-    vectorArr.push(generateRandXY);
+    vectorArr.push(generateRandXY());
   }
   return vectorArr;
 }
-function renderPlatforms(platformLimit, player, scene){
-  let x = 0, y = 0;
-  let platformsCheckOverlap = [], platformVectors = generateVectors(platformLimit);
-  let isOverlapping = false, isSpaceBetween = false;
-  for (let i = 0; i < platformLimit; i++) {
-    x = generateRandXY().x
-    y = generateRandXY().y
-    platformVectors.push({x, y})
-    let nextItem = getNextArrayItem(platformVectors, i)
-    let currentItem = platformVectors[i];
-    let platformIncrementor = 0;
 
-    if ((Math.abs(currentItem.y - nextItem.y)) > player.displayHeight){
-      let platform = platforms.create(x, y, 'ground')
-      platformsCheckOverlap.push(platform);
-      platformIncrementor++;
-      if (platformsCheckOverlap.length > 1){
-        let currentPlatform = platformsCheckOverlap[platformIncrementor]
-        let nextPlatform = getNextArrayItem(platformsCheckOverlap, platformIncrementor)
-        console.log(currentPlatform.body.touching)
-        scene.physics.add.overlap(currentPlatform, nextPlatform, function(){
-          platforms.remove(currentPlatform, true, true);
-          platforms.remove(nextPlatform, true, true);
-          isOverlapping = true
-        })
-      }
+function renderPlatforms(platformLimit, player, scene){
+  let platformVectors = generateVectors(platformLimit +1);
+
+  for (let i = 0; i < platformLimit; i++) {
+
+    let nextItem = getNextArrayItem(platformVectors, i);
+    let currentItem = platformVectors[i];
+
+    if ((Math.abs(currentItem.y - nextItem.y)) > player.displayHeight * 2){
+      boundingPlatforms.create(currentItem.x, currentItem.y, 'ground')
     }
-    console.log(isOverlapping)
-    if (isOverlapping){
-      x = generateRandXY().x
-      y = generateRandXY().y
-      platforms.create(x, y, 'ground')
-    }
-    console.log(`X coord: ${x}, Y coord: ${y}, Y Distance: ${(Math.abs(currentItem.y - nextItem.y))}`);  
-    //onsole.log((platformVectors[i].y - nextItem.y));
   }
+
+  if (boundingPlatforms.countActive(true) === 0){
+    renderPlatforms(platformLimit, player, scene)
+  }
+  console.log(platformVectors);
+  return platformVectors
 }
 
 function getNextArrayItem(array = [], index){
