@@ -34,6 +34,7 @@ function preload() {
   );
 }
 
+let platformVectors = [];
 let platforms;
 let player;
 let score = 0;
@@ -191,9 +192,21 @@ function generateRandXY(){
   return {x : randomCoordVal, y : randomCoordVal}
 }
 
+
+
 function renderPlatforms(platformLimit){
+  let x = 0, y = 0;
+
   for (let i = 0; i < platformLimit; i++) {
-    console.log(generateRandXY().x, generateRandXY().x)
-    platforms.create(generateRandXY().x, generateRandXY().y, 'ground')
+    x = generateRandXY().x, y = generateRandXY().y;
+    platformVectors.push({ x, y })
+    if (platformVectors[i+1] !== undefined && (platformVectors[i].y - platformVectors[i + 1].y) > 120){
+      platforms.create(x, y, 'ground')
+    }else{
+      platformVectors.pop();
+      x = generateRandXY().x, y = generateRandXY().y;
+      platformVectors.push({ x, y })
+      platforms.create(x, y, 'ground')
+    }
   }
 }
