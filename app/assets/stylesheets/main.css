@@ -38,6 +38,30 @@ body {
   align-items: center;
 }
 
+.form-text-field, #photo_title{
+  /* font-family: 'Quicksand', sans-serif; */
+  width: 253px;
+  height: 25px;
+  padding: 5px;
+}
+
+.submit-button {
+  color: white;
+  background-color: rgb(5, 0, 64);
+  padding: 8px;
+  font-family: 'Electrolize', sans-serif;
+  border: 2px solid white;
+  display: flex;
+  justify-content: center;
+  margin: auto;
+  transition: all 0.2s;
+}
+
+.submit-button:hover {
+  color: white;
+  background-color: rgb(21, 74, 232);
+}
+
 .footer {
   position: fixed;
   margin-bottom: 10px;

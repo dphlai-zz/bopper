@@ -207,7 +207,9 @@ function generateVectors(vectorCount){
   for (let i = 0; i < vectorCount; i++) {
     vectorArr.push(generateRandXY());
   }
-  return vectorArr;
+  return vectorArr.sort(function(a, b){
+    return 
+  });
 }
 
 function renderPlatforms(platformLimit, player, scene){
