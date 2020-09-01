@@ -32,10 +32,15 @@ function preload() {
     'assets/dude.png',
     { frameWidth: 32, frameHeight: 48 }
   );
+  this.load.spritesheet('mummy',
+    'assets/mummy.png',
+    {frameWidth: 37, frameHeight: 45}
+  );
 }
 
 let platforms;
 let player;
+let enemy;
 let score = 0;
 let scoreText;
 let bombs;
@@ -50,12 +55,20 @@ function create() {
   // console.log(platforms)
 
   player = this.physics.add.sprite(100, 450, 'dude');
+  enemy = this.physics.add.sprite(700, 450, 'mummy');
 
   player.setBounce(0.2);
   player.setCollideWorldBounds(true);
-  player.body.setGravityY(200)
+  player.body.setGravityY(200);
+
+  enemy.setBounce(0.2);
+  enemy.setCollideWorldBounds(true);
+  enemy.body.setGravityY(200);
+
   console.log(player.displayWidth);
+
   renderPlatforms(4, player, this)
+
   this.anims.create({
     key: 'left',
     frames: this.anims.generateFrameNumbers('dude', { start: 0, end: 3 }),
@@ -77,7 +90,9 @@ function create() {
   });
 
   this.physics.add.collider(player, platforms);
+  this.physics.add.collider(enemy, platforms);
   this.physics.add.collider([platforms])
+
   cursors = this.input.keyboard.createCursorKeys();
 
   stars = this.physics.add.group({
@@ -229,7 +244,7 @@ function renderPlatforms(platformLimit, player, scene){
       y = generateRandXY().y
       platforms.create(x, y, 'ground')
     }
-    console.log(`X coord: ${x}, Y coord: ${y}, Y Distance: ${(Math.abs(currentItem.y - nextItem.y))}`);  
+    console.log(`X coord: ${x}, Y coord: ${y}, Y Distance: ${(Math.abs(currentItem.y - nextItem.y))}`);
     //onsole.log((platformVectors[i].y - nextItem.y));
   }
 }
