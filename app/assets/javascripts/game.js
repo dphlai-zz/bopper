@@ -1,30 +1,29 @@
-
 const WIDTH = 800;
 const HEIGHT = 600;
 const Y_GRAVITY = 300;
 const ENEMY_VELOCITY = 50;
 
 let config = {
-    type: Phaser.AUTO,
-    width: WIDTH,
-    height: HEIGHT,
-    physics : {
-      default : 'arcade',
-      arcade : {
-        gravity : { y : Y_GRAVITY },
-        debug : false
-      }
-    },
-    scene: {
-        preload: preload,
-        create: create,
-        update: update
+  type: Phaser.AUTO,
+  width: WIDTH,
+  height: HEIGHT,
+  physics: {
+    default: 'arcade',
+    arcade: {
+      gravity: { y: Y_GRAVITY },
+      debug: false
     }
+  },
+  scene: {
+    preload: preload,
+    create: create,
+    update: update
+  }
 };
 
 let game = new Phaser.Game(config);
 
-function preload () {
+function preload() {
   this.load.image('sky', 'assets/sky.png');
   this.load.image('ground', 'assets/platform.png');
   this.load.image('star', 'assets/star.png');
@@ -43,7 +42,7 @@ let bombs;
 let bomb;
 let stars;
 
-function create () {
+function create() {
 
   this.add.image(400, 300, 'sky');
   platforms = this.physics.add.staticGroup();
@@ -64,20 +63,20 @@ function create () {
 
   this.anims.create({
     key: 'left',
-    frames: this.anims.generateFrameNumbers('dude', {start: 0, end: 3}),
+    frames: this.anims.generateFrameNumbers('dude', { start: 0, end: 3 }),
     frameRate: 10,
     repeat: -1
   });
 
   this.anims.create({
     key: 'turn',
-    frames: [{key: 'dude', frame: 4}],
+    frames: [{ key: 'dude', frame: 4 }],
     frameRate: 20
   });
 
   this.anims.create({
     key: 'right',
-    frames: this.anims.generateFrameNumbers('dude', {start: 5, end: 8}),
+    frames: this.anims.generateFrameNumbers('dude', { start: 5, end: 8 }),
     frameRate: 10,
     repeat: -1
   });
@@ -89,10 +88,10 @@ function create () {
   stars = this.physics.add.group({
     key: 'star',
     repeat: 11,
-    setXY: {x: 12, y: 0, stepX: 70}
+    setXY: { x: 12, y: 0, stepX: 70 }
   });
 
-  stars.children.iterate(function(child) {
+  stars.children.iterate(function (child) {
     child.setBounceY(Phaser.Math.FloatBetween(0.4, 0.8));
   });
 
@@ -101,7 +100,7 @@ function create () {
   this.physics.add.overlap(player, stars, collectStar, null, this);
 
   scoreText = this.add.text(16, 16, 'Score : 0', {
-    fontSize : '32px', fill: '#000'
+    fontSize: '32px', fill: '#000'
   });
 
   bombs = this.physics.add.group();
@@ -113,22 +112,25 @@ function create () {
   dropBomb();
 }
 
-function update () {
+function update() {
   startPlayerMovement();
-  if (bomb.body.touching.left){
-    bomb.setVelocityX(160);
-    this.physics.moveToObject(bomb, player, ENEMY_VELOCITY)
-  }
-  else if (bomb.body.touching.right){
-    bomb.setVelocityX(-160);
-    this.physics.moveToObject(bomb, player, ENEMY_VELOCITY)
-  }
-  else{
-    this.physics.moveToObject(bomb, player, ENEMY_VELOCITY)
-  }
+  let physics = this.physics
+  bombs.children.iterate(function (bomb) {
+    if (bomb.body.touching.left) {
+      bomb.setVelocityX(160);
+      physics.moveToObject(bomb, player, ENEMY_VELOCITY)
+    }
+    else if (bomb.body.touching.right) {
+      bomb.setVelocityX(-160);
+      physics.moveToObject(bomb, player, ENEMY_VELOCITY)
+    }
+    else {
+      physics.moveToObject(bomb, player, ENEMY_VELOCITY)
+    }
+  })
 }
 
-function startPlayerMovement(){
+function startPlayerMovement() {
   if (cursors.left.isDown) {
     player.setVelocityX(-160);
     player.anims.play('left', true);
@@ -146,13 +148,13 @@ function startPlayerMovement(){
   }
 }
 
-function collectStar (player, star) {
+function collectStar(player, star) {
   star.disableBody(true, true);
   score += 10;
   scoreText.setText('Score: ' + score);
 
   if (stars.countActive(true) === 0) {
-    stars.children.iterate(function(child) {
+    stars.children.iterate(function (child) {
       child.enableBody(true, child.x, 0, true, true);
     });
 
@@ -160,7 +162,7 @@ function collectStar (player, star) {
   }
 }
 
-function hitBomb (player, bomb) {
+function hitBomb(player, bomb) {
   this.physics.pause();
 
   player.setTint(0xff0000);
@@ -182,7 +184,7 @@ function hitBomb (player, bomb) {
   }, 2500)
 }
 
-function dropBomb(){
+function dropBomb() {
   let x = (player.x < 400) ? Phaser.Math.Between(400, 800) : Phaser.Math.Between(0, 400);
-  bomb = bombs.create(x, 16, 'bomb');
+  bombs.create(x, 16, 'bomb');
 }

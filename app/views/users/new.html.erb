@@ -11,7 +11,10 @@
     </ul>
   <% end %>
 </div>
-
+<script>
+  let user = <%= @user.to_json.html_safe %>
+  console.log(user);
+</script>
 
 <div class="page-form">
 <%= form_for @user do |f| %>
