@@ -1,0 +1,50 @@
+@import url('https://fonts.googleapis.com/css2?family=Electrolize&display=swap');
+
+body {
+  font-family: 'Electrolize', sans-serif;
+  background-color: black;
+  color: white;
+}
+
+.header-title, .welcome-back-message, .game {
+  display: flex;
+  justify-content: center;
+  color: white;
+}
+
+.navigation {
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: center;
+  list-style: none;
+  background: rgb(5, 0, 64);
+  color: white;
+}
+
+.navigation a {
+  text-decoration: none;
+  display: block;
+  padding: 1em;
+  color: white;
+}
+
+.navigation a:hover {
+  background: rgb(21, 74, 232);
+}
+
+.page-header, .page-form, .page-copy, .signup-error {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.footer {
+  position: fixed;
+  margin-bottom: 10px;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  color: white;
+  text-align: center;
+  font-size: 11px;
+}

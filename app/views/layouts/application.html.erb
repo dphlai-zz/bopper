@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>ProjectTwoBackend</title>
+    <title>SEI37 Project Two</title>
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
@@ -10,6 +10,36 @@
   </head>
 
   <body>
+
+    <div class="header-title">
+      <h1>PHASER</h1>
+    </div>
+
+    <% if @current_user.present? %>
+
+      <div class="welcome-back-message">
+        <h3>&#128126; &#128126; &#128126; Welcome back, <%= @current_user.name %> &#128126; &#128126; &#128126;</h3>
+      </div>
+
+    <% end %>
+
+    <ul class="navigation">
+      <% if @current_user.present? %>
+      <li><%= link_to 'PLAY', root_path %></li>
+      <li><%= link_to 'LOGOUT', login_path, method: 'delete' %></li>
+      <% else %>
+      <li><%= link_to 'PLAY', root_path %></li>
+      <li><%= link_to 'LOGIN', login_path %></li>
+      <li><%= link_to 'CREATE ACCOUNT', new_user_path %></li>
+      <% end %>
+    </ul>
+
+    <br>
     <%= yield %>
+
+  <div class="footer">
+    &copy; Ben P. and Danny L. 2020
+  </div>
+
   </body>
 </html>
