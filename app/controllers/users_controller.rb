@@ -1,4 +1,7 @@
 class UsersController < ApplicationController
+
+  before_action :check_if_logged_in, only:[:edit, :update]
+
   def new
     @user = User.new
   end # new
@@ -15,10 +18,13 @@ class UsersController < ApplicationController
   end # create
 
   def edit
-    redirect_to edit_user_path
+    @user = @current_user
   end # edit
 
   def update
+
+    @current_user.update user_params
+    redirect_to root_path
   end # update
 
   private
