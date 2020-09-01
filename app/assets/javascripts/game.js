@@ -47,12 +47,8 @@ function create() {
   this.add.image(400, 300, 'sky');
   platforms = this.physics.add.staticGroup();
 
+  renderPlatforms(4)
   platforms.create(400, 568, 'ground').setScale(2).refreshBody();
-
-  platforms.create(600, 400, 'ground');
-  platforms.create(50, 250, 'ground');
-  platforms.create(750, 220, 'ground');
-
   // console.log(platforms)
 
   player = this.physics.add.sprite(100, 450, 'dude');
@@ -187,4 +183,17 @@ function hitBomb(player, bomb) {
 function dropBomb() {
   let x = (player.x < 400) ? Phaser.Math.Between(400, 800) : Phaser.Math.Between(0, 400);
   bombs.create(x, 16, 'bomb');
+}
+
+function generateRandXY(){
+  let OFFSET = 100;
+  let randomCoordVal = Phaser.Math.Between(0, HEIGHT - OFFSET)
+  return {x : randomCoordVal, y : randomCoordVal}
+}
+
+function renderPlatforms(platformLimit){
+  for (let i = 0; i < platformLimit; i++) {
+    console.log(generateRandXY().x, generateRandXY().x)
+    platforms.create(generateRandXY().x, generateRandXY().y, 'ground')
+  }
 }
