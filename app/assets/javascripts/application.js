@@ -13,3 +13,4 @@
 //= require rails-ujs
 //= require_tree .
 //= stub 'game'
+//= require_tree ./channels
