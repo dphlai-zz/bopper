@@ -65,7 +65,7 @@ let gameover = false
 function create() {
   this.add.image(400, 300, 'sky');
   platforms = this.physics.add.staticGroup();
-  platforms.create((WIDTH / 2), (HEIGHT / 2), 'ground')
+  platforms.create((WIDTH / 2), (HEIGHT / 2) + 50, 'ground')
   platforms.create(400, 568, 'ground').setScale(2).refreshBody();
   player = this.physics.add.sprite(100, 450, 'dude');
   player.setBounce(0.2);
