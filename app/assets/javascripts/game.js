@@ -39,6 +39,7 @@ function preload() {
   );
 }
 
+let scene;
 let platforms;
 let player;
 let enemy
@@ -51,7 +52,6 @@ let stars;
 function create() {
 
   this.add.image(400, 300, 'sky');
-  boundingPlatforms = this.physics.add.staticGroup();
   platforms = this.physics.add.staticGroup();
   platforms.create(400, 568, 'ground').setScale(2).refreshBody();
 
@@ -61,28 +61,13 @@ function create() {
   player.setBounce(0.2);
   player.setCollideWorldBounds(true);
   player.body.setGravityY(200);
-
+  scene = this
   enemy.setBounce(0.2);
   enemy.setCollideWorldBounds(true);
   enemy.body.setGravityY(200);
 
   console.log(player.displayWidth);
-  let orderVectors = renderPlatforms(4, player, this)
-  console.log(orderVectors)
-  orderVectors.forEach(function(item, index){
-    console.log(item)
-    platforms.create(orderVectors[index].x, orderVectors[index].y, 'ground');
-  })
-
-  this.physics.add.overlap(boundingPlatforms, platforms, function(bounding, visible){
-    platforms.remove(visible, true, true)
-    boundingPlatforms.remove(bounding, true, true)
-    console.log("Hello")
-  })
-
-  boundingPlatforms.children.iterate(function(child){
-    child.visible = true
-  })
+  renderPlatforms(4, player, this)
 
   this.anims.create({
     key: 'left',
@@ -230,23 +215,47 @@ function generateVectors(vectorCount){
 }
 
 function renderPlatforms(platformLimit, player, scene){
-  let platformVectors = generateVectors(platformLimit +1);
+  let x = 0, y = 0;
+  let allRect = []
+  let isFitted = false, isOverlapped = false;
+  let h, w
+  platforms.children.iterate(function(child){
+    h = child.displayHeight;
+    w = child.displayWidth;
+  })
 
-  for (let i = 0; i < platformLimit; i++) {
+  for (let currentRow = 0; currentRow < platformLimit; currentRow++) {
+    x = generateRandXY().x;
+    y = generateRandXY().y;
 
-    let nextItem = getNextArrayItem(platformVectors, i);
-    let currentItem = platformVectors[i];
+    let rect = new Phaser.Geom.Rectangle(x, y, w, h)
+    allRect.push(rect)
 
-    if ((Math.abs(currentItem.y - nextItem.y)) > player.displayHeight * 2){
-      boundingPlatforms.create(currentItem.x, currentItem.y, 'ground')
+    let currentRect = allRect[currentRow];
+    let nextRect = getNextArrayItem(allRect, currentRow);
+
+    if (allRect.length > 1){
+      isOverlapped = Phaser.Geom.Intersects.RectangleToRectangle(currentRect, nextRect)
+      if (isOverlapped){
+        for (let currentRect = 0; currentRect < allRect.length; currentRect++) {
+          x = generateRandXY().x;
+          y = generateRandXY().y;
+          rect = new Phaser.Geom.Rectangle(x, y, w, h);
+          allRect.pop();
+          allRect.push(rect);
+        }
+      }
+      if ((Math.abs(currentRect.y - nextRect.y)) > player.displayHeight * 2) {
+        allRect.push(currentRect)
+      } 
+    } 
+    console.log(isOverlapped);
+  }
+  if(!isOverlapped){
+    for (let r = 0; r < allRect.length; r++) {
+      platforms.create(allRect[r].x, allRect[r].y, 'ground');
     }
   }
-
-  if (boundingPlatforms.countActive(true) === 0){
-    renderPlatforms(platformLimit, player, scene)
-  }
-  console.log(platformVectors);
-  return platformVectors
 }
 
 function getNextArrayItem(array = [], index){
