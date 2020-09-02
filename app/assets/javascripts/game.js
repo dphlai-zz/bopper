@@ -7,6 +7,15 @@ let config = {
   type: Phaser.AUTO,
   width: WIDTH,
   height: HEIGHT,
+  scale: {
+    parent: 'CanvasDiv',
+    mode: Phaser.Scale.FIT,
+    autoCenter: Phaser.Scale.CENTER_BOTH,
+    isPortrait: true
+  },
+  dom: {
+    createContainer: true
+  },
   physics: {
     default: 'arcade',
     arcade: {
@@ -22,6 +31,8 @@ let config = {
 };
 
 let game = new Phaser.Game(config);
+
+game.domContainer = true;
 
 function preload() {
   this.load.image('sky', 'assets/sky.png');
