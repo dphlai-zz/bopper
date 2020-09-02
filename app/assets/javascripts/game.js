@@ -55,6 +55,7 @@ let scene;
 let platforms;
 let player;
 let enemy
+let scene; 
 let score = 0;
 let scoreText;
 let bombs;
@@ -78,6 +79,7 @@ function create() {
     duration: 8000,
     loop: -1
   });
+  scene = this
   this.anims.create({
     key: 'left',
     frames: this.anims.generateFrameNumbers('dude', { start: 0, end: 3 }),
