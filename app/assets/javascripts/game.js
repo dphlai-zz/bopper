@@ -47,7 +47,7 @@ function preload() {
     { frameWidth: 37, frameHeight: 45 }
   );
 
-  
+
 
 }
 
@@ -65,6 +65,7 @@ let gameover = false
 function create() {
   this.add.image(400, 300, 'sky');
   platforms = this.physics.add.staticGroup();
+  platforms.create((WIDTH / 2), (HEIGHT / 2), 'ground')
   platforms.create(400, 568, 'ground').setScale(2).refreshBody();
   player = this.physics.add.sprite(100, 450, 'dude');
   player.setBounce(0.2);
@@ -252,8 +253,8 @@ function renderPlatforms(platformLimit, player){
       }
       if ((Math.abs(currentRect.y - nextRect.y)) > player.displayHeight * 2 && !isOverlapped) {
         allRect.push(currentRect)
-      } 
-    } 
+      }
+    }
     console.log(isOverlapped);
   }
   if(!isOverlapped){
