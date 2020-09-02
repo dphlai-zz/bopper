@@ -259,6 +259,7 @@ function renderPlatforms(platformLimit, player){
     console.log(isOverlapped);
   }
   if(!isOverlapped){
+    console.log(allRect);
     for (let r = 0; r < allRect.length; r++) {
       let plat = platforms.create(allRect[r].x, allRect[r].y, 'ground');
       plat.displayWidth = Phaser.Math.Between(10, 500);
