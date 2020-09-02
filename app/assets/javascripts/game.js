@@ -32,10 +32,16 @@ function preload() {
     'assets/dude.png',
     { frameWidth: 32, frameHeight: 48 }
   );
+
+  this.load.spritesheet('mummy',
+    'assets/mummy.png',
+    { frameWidth: 37, frameHeight: 45 }
+  );
 }
 
 let platforms;
 let player;
+let enemy
 let score = 0;
 let scoreText;
 let bombs;
@@ -49,22 +55,33 @@ function create() {
   platforms = this.physics.add.staticGroup();
   platforms.create(400, 568, 'ground').setScale(2).refreshBody();
 
+  enemy = this.physics.add.sprite(700, 450, 'mummy');
   player = this.physics.add.sprite(100, 450, 'dude');
 
   player.setBounce(0.2);
   player.setCollideWorldBounds(true);
   player.body.setGravityY(200);
 
+  enemy.setBounce(0.2);
+  enemy.setCollideWorldBounds(true);
+  enemy.body.setGravityY(200);
+
   console.log(player.displayWidth);
-  renderPlatforms(12, player, this).forEach(function(item){
+  let orderVectors = renderPlatforms(4, player, this)
+  console.log(orderVectors)
+  orderVectors.forEach(function(item, index){
     console.log(item)
-    platforms.create(item.x, item.y, 'ground');
+    platforms.create(orderVectors[index].x, orderVectors[index].y, 'ground');
   })
 
   this.physics.add.overlap(boundingPlatforms, platforms, function(bounding, visible){
     platforms.remove(visible, true, true)
     boundingPlatforms.remove(bounding, true, true)
     console.log("Hello")
+  })
+
+  boundingPlatforms.children.iterate(function(child){
+    child.visible = true
   })
 
   this.anims.create({
@@ -88,7 +105,7 @@ function create() {
   });
 
   this.physics.add.collider(player, platforms);
-  this.physics.add.collider([platforms])
+  this.physics.add.collider(enemy, platforms);
   cursors = this.input.keyboard.createCursorKeys();
 
   stars = this.physics.add.group({
@@ -208,7 +225,7 @@ function generateVectors(vectorCount){
     vectorArr.push(generateRandXY());
   }
   return vectorArr.sort(function(a, b){
-    return 
+    return b.x - a.x;
   });
 }
 
