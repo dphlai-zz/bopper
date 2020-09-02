@@ -63,19 +63,23 @@ let stars;
 function create() {
 
   this.add.image(400, 300, 'sky');
+
   platforms = this.physics.add.staticGroup();
   platforms.create(400, 568, 'ground').setScale(2).refreshBody();
 
-  enemy = this.physics.add.sprite(700, 450, 'mummy');
   player = this.physics.add.sprite(100, 450, 'dude');
-
   player.setBounce(0.2);
   player.setCollideWorldBounds(true);
   player.body.setGravityY(200);
-  scene = this
-  enemy.setBounce(0.2);
-  enemy.setCollideWorldBounds(true);
-  enemy.body.setGravityY(200);
+
+  let graphics = this.add.graphics();
+  path = this.add.path(700, 513);
+  path.lineTo(100, 513);
+  path.lineTo(700, 513);
+  follower = this.add.follower(path, 700, 513, 'mummy').startFollow({
+    duration: 8000,
+    loop: -1
+  });
 
   console.log(player.displayWidth);
   renderPlatforms(4, player, this)
@@ -101,7 +105,7 @@ function create() {
   });
 
   this.physics.add.collider(player, platforms);
-  this.physics.add.collider(enemy, platforms);
+  this.physics.add.collider(follower, player);
   cursors = this.input.keyboard.createCursorKeys();
 
   stars = this.physics.add.group({
@@ -258,8 +262,8 @@ function renderPlatforms(platformLimit, player, scene){
       }
       if ((Math.abs(currentRect.y - nextRect.y)) > player.displayHeight * 2) {
         allRect.push(currentRect)
-      } 
-    } 
+      }
+    }
     console.log(isOverlapped);
   }
   if(!isOverlapped){
