@@ -32,8 +32,6 @@ let config = {
 
 let game = new Phaser.Game(config);
 
-game.domContainer = true;
-
 function preload() {
   this.load.image('sky', 'assets/sky.png');
   this.load.image('ground', 'assets/platform.png');
@@ -48,6 +46,9 @@ function preload() {
     'assets/mummy.png',
     { frameWidth: 37, frameHeight: 45 }
   );
+
+  
+
 }
 
 let scene;
@@ -80,9 +81,6 @@ function create() {
     duration: 8000,
     loop: -1
   });
-
-  console.log(player.displayWidth);
-  renderPlatforms(4, player, this)
 
   this.anims.create({
     key: 'left',
@@ -133,6 +131,8 @@ function create() {
   this.physics.add.collider(player, bombs, hitBomb, null, this);
 
   dropBomb();
+
+  renderPlatforms(4, player)
 }
 
 function update() {
@@ -229,7 +229,7 @@ function generateVectors(vectorCount){
   });
 }
 
-function renderPlatforms(platformLimit, player, scene){
+function renderPlatforms(platformLimit, player){
   let x = 0, y = 0;
   let allRect = []
   let isFitted = false, isOverlapped = false;
@@ -260,7 +260,7 @@ function renderPlatforms(platformLimit, player, scene){
           allRect.push(rect);
         }
       }
-      if ((Math.abs(currentRect.y - nextRect.y)) > player.displayHeight * 2) {
+      if ((Math.abs(currentRect.y - nextRect.y)) > player.displayHeight * 2 && !isOverlapped) {
         allRect.push(currentRect)
       }
     }
@@ -268,7 +268,9 @@ function renderPlatforms(platformLimit, player, scene){
   }
   if(!isOverlapped){
     for (let r = 0; r < allRect.length; r++) {
-      platforms.create(allRect[r].x, allRect[r].y, 'ground');
+      let plat = platforms.create(allRect[r].x, allRect[r].y, 'ground');
+      plat.displayWidth = Phaser.Math.Between(10, 500);
+      plat.refreshBody();
     }
   }
 }
