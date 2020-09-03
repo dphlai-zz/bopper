@@ -1,5 +1,10 @@
-<div class="highscore">
-  Your highest score: <%= @current_user.scores.pluck(:highscore).max %>
-</div>
-
-<%= javascript_include_tag 'game' %>
+<% if @current_user.present? %>
+  <div class="highscore">
+    Your highest score: <%= @current_user.scores.pluck(:highscore).max %>
+  </div>
+  <%= javascript_include_tag 'game' %>
+<% else %>
+  <div class="signup-message">
+    Sign up now or login to play!
+  </div>
+<% end %>

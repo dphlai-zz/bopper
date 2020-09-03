@@ -32,7 +32,7 @@ body {
   background: rgb(21, 74, 232);
 }
 
-.page-header, .page-form, .page-copy, .signup-error {
+.page-header, .page-form, .page-copy, .signup-error, .signup-message {
   display: flex;
   justify-content: center;
   align-items: center;
