@@ -128,7 +128,7 @@ function create() {
 
 function dropStars(scene){
   stars.clear(true);
-  bombs.clear(true)
+  bombs.clear(true);
   stars = scene.physics.add.group({
     key: 'star',
     repeat: 11,
