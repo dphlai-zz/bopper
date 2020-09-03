@@ -60,7 +60,7 @@ let plat
 let scene;
 let platforms;
 let player;
-let enemy
+let mummy;
 let score = 0;
 let scoreText;
 let bombs;
@@ -83,7 +83,7 @@ function create() {
   path = this.add.path(700, 513);
   path.lineTo(100, 513);
   path.lineTo(700, 513);
-  follower = this.add.follower(path, 700, 513, 'mummy').startFollow({
+  mummy = this.add.follower(path, 700, 513, 'mummy').startFollow({
     duration: 8000,
     loop: -1
   });
@@ -106,7 +106,7 @@ function create() {
     repeat: -1
   });
   this.physics.add.collider(player, platforms);
-  this.physics.add.collider(follower, player);
+  this.physics.add.collider(mummy, player);
   cursors = this.input.keyboard.createCursorKeys();
   stars = this.physics.add.group({
     key: 'star',
@@ -121,7 +121,13 @@ function create() {
     frames: this.anims.generateFrameNumbers('star', { start: 0, end: 5 }),
     frameRate: 10,
     repeat: -1
-  })
+  });
+  this.anims.create({
+    key: 'walk',
+    frames: this.anims.generateFrameNumbers('mummy', {start: 0, end: 17}),
+    framerate: 10,
+    repeat: -1
+  });
   this.physics.add.collider(stars, platforms);
   this.physics.add.overlap(player, stars, collectStar, null, this);
   scoreText = this.add.text(16, 16, 'Score : 0', {
@@ -182,6 +188,8 @@ function update() {
   stars.children.iterate(function(child){
     child.anims.play('spin', true)
   })
+
+  mummy.anims.play('walk', true);
 }
 
 function startPlayerMovement() {
