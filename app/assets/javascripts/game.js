@@ -32,6 +32,7 @@ let config = {
 };
 
 let game = new Phaser.Game(config);
+let rows;
 
 function preload() {
   this.load.image('sky', 'assets/sky.png');
@@ -47,8 +48,6 @@ function preload() {
     'assets/mummy.png',
     { frameWidth: 37, frameHeight: 45 }
   );
-
-
 
 }
 
@@ -119,11 +118,37 @@ function create() {
   bombs = this.physics.add.group();
   this.physics.add.collider(bombs, platforms);
   this.physics.add.collider(player, bombs, hitBomb, null, this);
-
+  
   dropBomb();
   renderPlatforms();
 }
 
+function dropStars(scene){
+  stars.clear(true);
+  bombs.clear(true)
+  stars = scene.physics.add.group({
+    key: 'star',
+    repeat: 11,
+    setXY: { x: 12, y: 0, stepX: 70 }
+  });
+  stars.children.iterate(function (child) {
+    child.setBounceY(Phaser.Math.FloatBetween(0.4, 0.8));
+  });
+
+  scene.physics.add.collider(stars, platforms);
+  scene.physics.add.overlap(player, stars, collectStar, null, this);
+
+  dropBomb();
+}
+function resetPlayer(scene){
+  //player.clear(true);
+  const {x, y} = generateRandXY();
+  player.x = x
+  player.y = y
+  scene.physics.resume();
+
+  player.setTint();
+}
 function update() {
   startPlayerMovement();
   let physics = this.physics
@@ -181,13 +206,18 @@ function onGameover(scene){
   const CENTER_X = (WIDTH / 2) - (GAMEOVER_FEEDBACK_TEXT.length / 2) - X_OFFSET
   const CENTER_Y = (HEIGHT / 2) - (GAMEOVER_FEEDBACK_TEXT.length / 2) + Y_OFFSET
   console.log(this);
-  scene.add.text(CENTER_X, CENTER_Y, GAMEOVER_FEEDBACK_TEXT, {
+  const text = scene.add.text(CENTER_X, CENTER_Y, GAMEOVER_FEEDBACK_TEXT, {
     fontSize: '18px', fill: '#000'
   })
-  $.
   setTimeout(function () {
     score = 0;
-    scene.scene.restart();
+    dropStars(scene);
+    resetPlayer(scene);
+    text.destroy();
+    scoreText.destroy();
+    scoreText = scene.add.text(16, 16, 'Score : 0', {
+      fontSize: '32px', fill: '#000'
+    });
   }, 2500)
 
   gameover = true
@@ -346,11 +376,13 @@ function renderPlatforms(){
       }
     }
 
-    if (failureCount <= 100) {
+    if(platformRows !== undefined){
+      if (failureCount <= 100) {
         platformRows.push(currentPlatform)
-    } else {
-      console.log("Pushing null");
-      platformRows.push(null);
+      } else {
+        console.log("Pushing null");
+        platformRows.push(null);
+      }
     }
   }
   /*
@@ -370,7 +402,7 @@ function renderPlatforms(){
     }
   })
 
-  console.log(platformRows)
+  return platformRows
 }
 
 /*
@@ -379,11 +411,12 @@ function renderPlatforms(){
 */
 function getPlatformDHDW(platforms){
   let dh, dw
-  platforms.children.iterate(function(child){
-    dh = child.displayHeight;
-    dw = child.displayWidth;
-  })  
-
+  if(platforms !== undefined){
+    platforms.children.iterate(function (child) {
+      dh = child.displayHeight;
+      dw = child.displayWidth;
+    })  
+  }
   return {dh, dw}
 }
 
