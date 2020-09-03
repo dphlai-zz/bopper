@@ -199,11 +199,13 @@ function startPlayerMovement() {
   }
 
   const isJumpJustDown = Phaser.Input.Keyboard.JustDown(this.cursors.up)
-  jumpCount = 0;
   if (isJumpJustDown && (player.body.touching.down || jumpCount < 2)) {
     player.setVelocityY(-400)
+    jumpCount++;
 
-    jumpCount++
+    if ( jumpCount > 2){
+      jumpCount = 0;
+    }
   }
 }
 
