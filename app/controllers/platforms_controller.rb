@@ -1,23 +1,20 @@
 class PlatformsController < ApplicationController
   skip_before_action :verify_authenticity_token
+  
   def create
-    platforms = params[:platforms]
+    users_map = Map.create(title: "#{@current_user.name}", user_id: @current_user.id)
     active_rec_platforms = []
-    puts "PLATFORM POST DATA: #{platforms}"
-   
+    platforms = JSON.parse(params[:platforms])
     platforms.each do |p|
-      puts "LOOP PLATFORM DATA: #{p}"
-      Platform.create(
-        width: p[i.to_s]["width"].to_f,
-        height: p[i.to_s]["height"].to_f,
-        x: p[i.to_s]["x"].to_f,
-        y: p[i.to_s]["y"].to_f
+      active_rec_platforms << Platform.create(
+        width: p["width"].to_f,
+        height: p["height"].to_f,
+        x: p["x"].to_f,
+        y: p["y"].to_f,
+        map_id: users_map.id
       )
     end
-
-    puts "ACTIVE RECORD PLATS #{active_rec_platforms}"
-    users_map = Map.create(title: "#{@current_user.name}")
-    #users_map.platforms + active_rec_platforms
+    puts "USER PLATFORMS: #{users_map.platforms.to_a}"
     users_map.save
 
     render :json => {

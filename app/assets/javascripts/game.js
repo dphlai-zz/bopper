@@ -4,7 +4,8 @@ const Y_GRAVITY = 300;
 const ENEMY_VELOCITY = 50;
 
 const SCORE_ROUTE = '/scores'
-const PLATFORM_ROUTE = '/platforms'
+const MAPDATA_ROUTE = '/mapdata'
+const POST_PLATFORM_ROUTE = '/platforms'
 
 let config = {
   type: Phaser.AUTO,
@@ -134,9 +135,24 @@ function create() {
   bombs = this.physics.add.group();
   this.physics.add.collider(bombs, platforms);
   this.physics.add.collider(player, bombs, hitBomb, null, this);
-
   dropBomb();
-  renderPlatforms();
+  
+  $.getJSON(MAPDATA_ROUTE)
+  .done(res => {
+    let resPlatforms = res.platforms;
+    if (resPlatforms !== undefined && resPlatforms.length > 0){
+      resPlatforms.forEach(function (platformData) {
+        singularPlatform = platforms.create(platformData.x, platformData.y, 'ground');
+        singularPlatform.displayWidth = platformData.width;
+        singularPlatform.displayHeight = platformData.height;
+        singularPlatform.refreshBody();
+      })
+    }else{
+      renderPlatforms();
+    }
+  })
+  .fail(err => console.warn(err))
+
 }
 
 function dropStars(scene){
@@ -249,7 +265,9 @@ function onGameover(scene){
 
   gameover = true
 }
-
+/* 
+  psuedoRestart 
+*/
 function psuedoRestart(scene, gameoverText){
   score = 0;
   dropStars(scene);
@@ -318,13 +336,11 @@ function renderPlatforms(){
           useable = true;
         }else{
           failureCount++;
-
           if (failureCount > 10) {
             break;
           }
         } // closing else for not being useable
       }else{
-
         break;
       }
     }
@@ -372,7 +388,7 @@ function renderPlatforms(){
         y : child.y
       })
   })
-  $.post(PLATFORM_ROUTE, {platforms : platformData}, function(res){
+  $.post(POST_PLATFORM_ROUTE, {platforms : JSON.stringify(platformData)}, function(res){
     console.log(res);
   }, 'json')
   .fail(err => console.warn(err));

@@ -1,6 +1,4 @@
 Rails.application.routes.draw do
-  get 'platforms/create'
-  get 'platforms/show'
   root to: 'pages#home'
 
   get '/login' => 'session#new'
@@ -9,10 +7,9 @@ Rails.application.routes.draw do
 
   delete '/login' => 'session#destroy'
 
-  #post '/highscores' => ""
+  get '/mapdata' => 'maps#get_map'
 
   resources :users
   resources :scores
-  resources :maps
   resources :platforms
 end
