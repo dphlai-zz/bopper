@@ -39,7 +39,7 @@ let rows;
 function preload() {
   this.load.image('sky', 'assets/background.png');
   this.load.image('ground', 'assets/platform.png');
-  this.load.image('bomb', 'assets/bomb.png');
+  this.load.image('bomb', 'assets/space-baddie-purple.png');
   this.load.spritesheet('star',
     'assets/coin.png',
     {frameWidth: 32, frameHeight: 32}
