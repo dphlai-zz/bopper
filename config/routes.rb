@@ -1,5 +1,8 @@
 Rails.application.routes.draw do
 
+  get 'scores/create'
+  get 'scores/show'
+  get 'scores/index'
   root to: 'pages#home'
 
   get '/login' => 'session#new'
