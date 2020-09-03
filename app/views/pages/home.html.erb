@@ -1,1 +1,5 @@
+<div class="highscore">
+  Your highest score: <%= @current_user.scores.pluck(:highscore).max %>
+</div>
+
 <%= javascript_include_tag 'game' %>

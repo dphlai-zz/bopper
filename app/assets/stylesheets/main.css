@@ -38,6 +38,13 @@ body {
   align-items: center;
 }
 
+.highscore {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 32px;
+}
+
 .form-text-field, #photo_title{
   /* font-family: 'Quicksand', sans-serif; */
   width: 253px;
