@@ -37,8 +37,11 @@ let rows;
 function preload() {
   this.load.image('sky', 'assets/sky.png');
   this.load.image('ground', 'assets/platform.png');
-  this.load.image('star', 'assets/star.png');
   this.load.image('bomb', 'assets/bomb.png');
+  this.load.spritesheet('star',
+    'assets/coin.png',
+    {frameWidth: 32, frameHeight: 32}
+  );
   this.load.spritesheet('dude',
     'assets/dude.png',
     { frameWidth: 32, frameHeight: 48 }
@@ -100,6 +103,12 @@ function create() {
     frameRate: 10,
     repeat: -1
   });
+  this.anims.create({
+    key: 'spin',
+    frames: this.anims.generateFrameNumbers('star', {start: 0, end: 5}),
+    frameRate: 10,
+    repeat: -1
+  })
   this.physics.add.collider(player, platforms);
   this.physics.add.collider(follower, player);
   cursors = this.input.keyboard.createCursorKeys();
@@ -166,6 +175,8 @@ function update() {
       physics.moveToObject(bomb, player, ENEMY_VELOCITY)
     }
   })
+
+  star.anims.play('spin', true);
 }
 
 function startPlayerMovement() {
