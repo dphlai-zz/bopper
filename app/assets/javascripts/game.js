@@ -2,7 +2,9 @@ const WIDTH = 800;
 const HEIGHT = 600;
 const Y_GRAVITY = 300;
 const ENEMY_VELOCITY = 50;
-const SCORE_POST_ROUTE = '/highscore'
+
+const SCORE_ROUTE = '/scores'
+const PLATFORM_ROUTE = '/platforms'
 
 let config = {
   type: Phaser.AUTO,
@@ -21,7 +23,7 @@ let config = {
     default: 'arcade',
     arcade: {
       gravity: { y: Y_GRAVITY },
-      debug: false
+      debug: true
     }
   },
   scene: {
@@ -161,6 +163,7 @@ function resetPlayer(scene){
 }
 function update() {
   startPlayerMovement();
+  console.log(Phaser.Input.Keyboard.JustDown(cursors.up.isUp));
   let physics = this.physics
   bombs.children.iterate(function (bomb) {
     if (bomb.body.touching.left) {
@@ -228,17 +231,21 @@ function onGameover(scene){
     fontSize: '18px', fill: '#000'
   })
   setTimeout(function () {
-    score = 0;
-    dropStars(scene);
-    resetPlayer(scene);
-    text.destroy();
-    scoreText.destroy();
-    scoreText = scene.add.text(16, 16, 'Score : 0', {
-      fontSize: '32px', fill: '#000'
-    });
+    psuedoRestart(scene, text);
   }, 2500)
 
   gameover = true
+}
+
+function psuedoRestart(scene, gameoverText){
+  score = 0;
+  dropStars(scene);
+  resetPlayer(scene);
+  gameoverText.destroy();
+  scoreText.destroy();
+  scoreText = scene.add.text(16, 16, 'Score : 0', {
+    fontSize: '32px', fill: '#000'
+  });
 }
 
 function hitBomb(player, bomb) {
@@ -338,6 +345,18 @@ function renderPlatforms(){
       plat.refreshBody();
     }
   })
+
+  /* 
+    After the platforms are created post there data to the back end 
+    use the platforms.children.iterate function get there distinct
+    values. 
+
+    width : child.width, height : child.height, 
+    x : child.x, y : child.y
+
+    push each iteration into an array 
+    and post the array.
+  */
 
   return platformRows
 }
