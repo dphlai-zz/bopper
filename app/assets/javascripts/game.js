@@ -61,13 +61,14 @@ let scoreText;
 let bombs;
 let bomb;
 let stars;
-let gameover = false
+let gameover = false;
+let jumpCount = 0;
 
 function create() {
   this.add.image(400, 300, 'sky');
   platforms = this.physics.add.staticGroup();
   //centerPlat = platforms.create((WIDTH / 2), (HEIGHT / 2) + 50, 'ground')
-  
+
   platforms.create(400, 568, 'ground').setScale(2).refreshBody();
   player = this.physics.add.sprite(100, 450, 'dude');
   player.setBounce(0.2);
@@ -118,7 +119,7 @@ function create() {
   bombs = this.physics.add.group();
   this.physics.add.collider(bombs, platforms);
   this.physics.add.collider(player, bombs, hitBomb, null, this);
-  
+
   dropBomb();
   renderPlatforms();
 }
@@ -180,8 +181,13 @@ function startPlayerMovement() {
     player.setVelocityX(0);
     player.anims.play('turn');
   }
-  if (cursors.up.isDown && player.body.touching.down) {
-    player.setVelocityY(-500)
+
+  const isJumpJustDown = Phaser.Input.Keyboard.JustDown(this.cursors.up)
+  jumpCount = 0;
+  if (isJumpJustDown && (player.body.touching.down || jumpCount < 2)) {
+    player.setVelocityY(-400)
+
+    jumpCount++
   }
 }
 
@@ -279,7 +285,7 @@ function generateRandXY(){
 //       }
 //     }
 //     console.log(isOverlapped);
-//   }// End of rows loop 
+//   }// End of rows loop
 //     console.log(allRect);
 //     if (!isOverlapped){
 //       for (let r = 0; r < allRect.length; r++) {
@@ -324,12 +330,12 @@ for each platform in platformRows
   add it to the map/game (create)
 end
 
-Notes: 
+Notes:
   1. Important values!
-    1a. The width of the generated rectangle doesnt compare the changing 
+    1a. The width of the generated rectangle doesnt compare the changing
         platform sprites display width so I need to feed the rectangle instances width
         with those values
-    2a. Failure count doesnt seem to do much 
+    2a. Failure count doesnt seem to do much
 
 */
 function renderPlatforms(){
@@ -343,7 +349,7 @@ function renderPlatforms(){
   const {dw, dh} = getPlatformDHDW(platforms)
   console.log(dw, dh)
   for (let r = 0; r < ROW_COUNT; r++) {
-    console.log("row = ", r, "****************************"); 
+    console.log("row = ", r, "****************************");
     let failureCount = 0;
     const y = (r + 1) * dh;
     let useable = false;
@@ -351,7 +357,7 @@ function renderPlatforms(){
       const randX = generateRandXY().x;
       const randY = generateRandXY().y;
       console.log({ randX, y, dw, dh});
-      currentPlatform = new Phaser.Geom.Rectangle(randX, y, dh * failureCount, dh); 
+      currentPlatform = new Phaser.Geom.Rectangle(randX, y, dh * failureCount, dh);
       console.log(currentPlatform, randX, randY)
       // Checking for empty data
       previousPlatform = platformRows[r - 1];
@@ -386,8 +392,8 @@ function renderPlatforms(){
     }
   }
   /*
-    Loop through each platform and render them to the canvas 
-    based on rectangle coords above. Also generates random 
+    Loop through each platform and render them to the canvas
+    based on rectangle coords above. Also generates random
     widths
   */
   platformRows.forEach(function (rectangle) {
@@ -406,8 +412,8 @@ function renderPlatforms(){
 }
 
 /*
-  Gets platform sprite display height and 
-  display width. 
+  Gets platform sprite display height and
+  display width.
 */
 function getPlatformDHDW(platforms){
   let dh, dw
@@ -415,7 +421,7 @@ function getPlatformDHDW(platforms){
     platforms.children.iterate(function (child) {
       dh = child.displayHeight;
       dw = child.displayWidth;
-    })  
+    })
   }
   return {dh, dw}
 }
