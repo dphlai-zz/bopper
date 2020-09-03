@@ -23,7 +23,7 @@ let config = {
     default: 'arcade',
     arcade: {
       gravity: { y: Y_GRAVITY },
-      debug: true
+      debug: false
     }
   },
   scene: {
@@ -56,7 +56,7 @@ function preload() {
 
 }
 
-let centerPlat
+let plat
 let scene;
 let platforms;
 let player;
@@ -74,7 +74,7 @@ function create() {
   platforms = this.physics.add.staticGroup();
   //centerPlat = platforms.create((WIDTH / 2), (HEIGHT / 2) + 50, 'ground')
 
-  platforms.create(400, 568, 'ground').setScale(2).refreshBody();
+  plat = platforms.create(400, 568, 'ground').setScale(2).refreshBody();
   player = this.physics.add.sprite(100, 450, 'dude');
   player.setBounce(0.2);
   player.setCollideWorldBounds(true);
@@ -105,12 +105,6 @@ function create() {
     frameRate: 10,
     repeat: -1
   });
-  this.anims.create({
-    key: 'spin',
-    frames: this.anims.generateFrameNumbers('star', {start: 0, end: 5}),
-    frameRate: 10,
-    repeat: -1
-  })
   this.physics.add.collider(player, platforms);
   this.physics.add.collider(follower, player);
   cursors = this.input.keyboard.createCursorKeys();
@@ -122,6 +116,12 @@ function create() {
   stars.children.iterate(function (child) {
     child.setBounceY(Phaser.Math.FloatBetween(0.4, 0.8));
   });
+  this.anims.create({
+    key: 'spin',
+    frames: this.anims.generateFrameNumbers('star', { start: 0, end: 5 }),
+    frameRate: 10,
+    repeat: -1
+  })
   this.physics.add.collider(stars, platforms);
   this.physics.add.overlap(player, stars, collectStar, null, this);
   scoreText = this.add.text(16, 16, 'Score : 0', {
@@ -179,7 +179,9 @@ function update() {
     }
   })
 
-  star.anims.play('spin', true);
+  stars.children.iterate(function(child){
+    child.anims.play('spin', true)
+  })
 }
 
 function startPlayerMovement() {
@@ -284,7 +286,6 @@ function renderPlatforms(){
   let currentPlatform;
   let previousPlatform;
 
-
   const {dw, dh} = getPlatformDHDW(platforms)
 
   for (let r = 0; r < ROW_COUNT; r++) {
@@ -294,8 +295,10 @@ function renderPlatforms(){
     let useable = false;
     while (!useable) {
       const randX = generateRandXY().x;
-      currentPlatform = new Phaser.Geom.Rectangle(randX, y, dw, dh); 
-      previousPlatform = platformRows[r - 1];
+      if(y < HEIGHT - (dh * 2)){
+        currentPlatform = new Phaser.Geom.Rectangle(randX, y, dw, dh);
+        previousPlatform = platformRows[r - 1];
+      }
       // Checking for empty data
       if(r > 0 && previousPlatform !== null){
         // If the current platform intersects with the previously generated platform
