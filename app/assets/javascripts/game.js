@@ -239,9 +239,10 @@ function onGameover(scene){
   const text = scene.add.text(CENTER_X, CENTER_Y, GAMEOVER_FEEDBACK_TEXT, {
     fontSize: '18px', fill: '#fff'
   })
-  $.post(SCORE_ROUTE, score, function(res){
-    
+  $.post(SCORE_ROUTE, {score}, function(res){
+    console.log(res);
   })
+  .fail(err => console.warn(err))
   setTimeout(function () {
     psuedoRestart(scene, text);
   }, 2500)
@@ -313,7 +314,6 @@ function renderPlatforms(){
       if(r > 0 && previousPlatform !== null){
         // If the current platform intersects with the previously generated platform
         // then increment the failure count. If it fails to many times break out of the loop
-
         if (!Phaser.Geom.Intersects.RectangleToRectangle(currentPlatform, previousPlatform)) {
           useable = true;
         }else{
@@ -328,16 +328,13 @@ function renderPlatforms(){
         break;
       }
     }
+    if (failureCount <= 10) {
+      platformRows.push(currentPlatform)
+    } else {
 
-    if(platformRows !== undefined){
-      if (failureCount <= 10) {
-        platformRows.push(currentPlatform)
-      } else {
-
-        platformRows.push(null);
-      }
+      platformRows.push(null);
     }
-  }
+}
   /*
     Loop through each platform and render them to the canvas
     based on rectangle coords above. Also generates random
@@ -346,7 +343,6 @@ function renderPlatforms(){
   platformRows.forEach(function (rectangle) {
     let plat;
     if (rectangle != null){
-
       plat = platforms.create(rectangle.x, rectangle.y, 'ground');
     }
     if(plat !== undefined){
@@ -366,6 +362,20 @@ function renderPlatforms(){
     push each iteration into an array
     and post the array.
   */
+
+  let platformData = []
+  platforms.children.iterate(function(child){
+      platformData.push({
+        width : child.displayWidth,
+        height : child.displayHeight,
+        x : child.x,
+        y : child.y
+      })
+  })
+  $.post(PLATFORM_ROUTE, {platforms : platformData}, function(res){
+    console.log(res);
+  }, 'json')
+  .fail(err => console.warn(err));
 
   return platformRows
 }

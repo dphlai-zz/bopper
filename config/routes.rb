@@ -1,8 +1,6 @@
 Rails.application.routes.draw do
-
-  get 'scores/create'
-  get 'scores/show'
-  get 'scores/index'
+  get 'platforms/create'
+  get 'platforms/show'
   root to: 'pages#home'
 
   get '/login' => 'session#new'
@@ -14,7 +12,7 @@ Rails.application.routes.draw do
   #post '/highscores' => ""
 
   resources :users
-
+  resources :scores
   resources :maps
-
+  resources :platforms
 end
