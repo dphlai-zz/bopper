@@ -283,13 +283,9 @@ function renderPlatforms(){
     let useable = false;
     while (!useable) {
       const randX = generateRandXY().x;
-      const randY = generateRandXY().y;
-
-      currentPlatform = new Phaser.Geom.Rectangle(randX, y, dw, dh);
-
-      // Checking for empty data
+      currentPlatform = new Phaser.Geom.Rectangle(randX, y, dw, dh); 
       previousPlatform = platformRows[r - 1];
-
+      // Checking for empty data
       if(r > 0 && previousPlatform !== null){
         // If the current platform intersects with the previously generated platform
         // then increment the failure count. If it fails to many times break out of the loop
