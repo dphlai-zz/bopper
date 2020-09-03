@@ -8,6 +8,8 @@ Rails.application.routes.draw do
 
   delete '/login' => 'session#destroy'
 
+  #post '/highscores' => ""
+
   resources :users
 
   resources :maps

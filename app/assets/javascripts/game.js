@@ -2,6 +2,7 @@ const WIDTH = 800;
 const HEIGHT = 600;
 const Y_GRAVITY = 300;
 const ENEMY_VELOCITY = 50;
+const SCORE_POST_ROUTE = '/highscore'
 
 let config = {
   type: Phaser.AUTO,
@@ -183,6 +184,7 @@ function onGameover(scene){
   scene.add.text(CENTER_X, CENTER_Y, GAMEOVER_FEEDBACK_TEXT, {
     fontSize: '18px', fill: '#000'
   })
+  $.
   setTimeout(function () {
     score = 0;
     scene.scene.restart();
@@ -292,29 +294,34 @@ for each platform in platformRows
   add it to the map/game (create)
 end
 
+Notes: 
+  1. Important values!
+    1a. The width of the generated rectangle doesnt compare the changing 
+        platform sprites display width so I need to feed the rectangle instances width
+        with those values
+    2a. Failure count doesnt seem to do much 
+
 */
 function renderPlatforms(){
   let platformRows = [];
 
-  const ROW_COUNT = 20;
+  const ROW_COUNT = 100;
   let currentPlatform;
   let previousPlatform;
 
 
   const {dw, dh} = getPlatformDHDW(platforms)
   console.log(dw, dh)
-  for (let r = 0; r < ROW_COUNT; r++) { 
+  for (let r = 0; r < ROW_COUNT; r++) {
     console.log("row = ", r, "****************************"); 
     let failureCount = 0;
-    const y = (r * dh)
-    let useable = false
+    const y = (r + 1) * dh;
+    let useable = false;
     while (!useable) {
-
-      console.log(r * dh, "========================================", failureCount);
       const randX = generateRandXY().x;
       const randY = generateRandXY().y;
       console.log({ randX, y, dw, dh});
-      currentPlatform = new Phaser.Geom.Rectangle(randX, y, dw, dh); 
+      currentPlatform = new Phaser.Geom.Rectangle(randX, y, dh * failureCount, dh); 
       console.log(currentPlatform, randX, randY)
       // Checking for empty data
       previousPlatform = platformRows[r - 1];
@@ -322,7 +329,6 @@ function renderPlatforms(){
       if(r > 0 && previousPlatform !== null){
         // If the current platform intersects with the previously generated platform
         // then increment the failure count. If it fails to many times break out of the loop
-        // I don't think it works correctly
         console.log({currentPlatform, previousPlatform});
         console.log(!Phaser.Geom.Intersects.RectangleToRectangle(currentPlatform, previousPlatform));
         if (!Phaser.Geom.Intersects.RectangleToRectangle(currentPlatform, previousPlatform)) {
@@ -330,7 +336,7 @@ function renderPlatforms(){
         }else{
           failureCount++;
           console.log({ failureCount })
-          if (failureCount > 30) {
+          if (failureCount > 100) {
             break;
           }
         } // closing else for not being useable
@@ -340,9 +346,10 @@ function renderPlatforms(){
       }
     }
 
-    if (failureCount <= 30) {
+    if (failureCount <= 100) {
         platformRows.push(currentPlatform)
     } else {
+      console.log("Pushing null");
       platformRows.push(null);
     }
   }
