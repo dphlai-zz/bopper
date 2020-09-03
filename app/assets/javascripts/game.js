@@ -55,120 +55,142 @@ function preload() {
 
 }
 
-let plat
-let scene;
+
 let platforms;
 let player;
 let mummy;
 let score = 0;
 let scoreText;
 let bombs;
-let bomb;
-let stars;
-let gameover = false;
-let jumpCount = 0;
+let coins;
 
 function create() {
   this.add.image(400, 300, 'sky');
-  platforms = this.physics.add.staticGroup();
-  //centerPlat = platforms.create((WIDTH / 2), (HEIGHT / 2) + 50, 'ground')
-
-  plat = platforms.create(400, 568, 'ground').setScale(2).refreshBody();
-  player = this.physics.add.sprite(100, 450, 'dude');
-  player.setBounce(0.2);
-  player.setCollideWorldBounds(true);
-  player.body.setGravityY(200);
-  let graphics = this.add.graphics();
-  path = this.add.path(700, 513);
-  path.lineTo(100, 513);
-  path.lineTo(700, 513);
-  mummy = this.add.follower(path, 700, 513, 'mummy').startFollow({
-    duration: 8000,
-    loop: -1
-  });
-  scene = this
-  this.anims.create({
-    key: 'left',
-    frames: this.anims.generateFrameNumbers('dude', { start: 0, end: 3 }),
-    frameRate: 10,
-    repeat: -1
-  });
-  this.anims.create({
-    key: 'turn',
-    frames: [{ key: 'dude', frame: 4 }],
-    frameRate: 20
-  });
-  this.anims.create({
-    key: 'right',
-    frames: this.anims.generateFrameNumbers('dude', { start: 5, end: 8 }),
-    frameRate: 10,
-    repeat: -1
-  });
-  this.physics.add.collider(player, platforms);
-  this.physics.add.collider(mummy, player);
+  initPlatforms(this)
+  initPlayer(this);
+  initPlayerAnims(this);
+  mummy = initMummyFollow(this);
+  initCoins(this);
   cursors = this.input.keyboard.createCursorKeys();
-  stars = this.physics.add.group({
-    key: 'star',
-    repeat: 11,
-    setXY: { x: 12, y: 0, stepX: 70 }
-  });
-  stars.children.iterate(function (child) {
-    child.setBounceY(Phaser.Math.FloatBetween(0.4, 0.8));
-  });
-  this.anims.create({
-    key: 'spin',
-    frames: this.anims.generateFrameNumbers('star', { start: 0, end: 5 }),
-    frameRate: 10,
-    repeat: -1
-  });
-  this.anims.create({
-    key: 'walk',
-    frames: this.anims.generateFrameNumbers('mummy', {start: 0, end: 17}),
-    framerate: 10,
-    repeat: -1
-  });
-  this.physics.add.collider(stars, platforms);
-  this.physics.add.overlap(player, stars, collectStar, null, this);
+  initCoinSpin(this)
+  initMummyWalk(this)
   scoreText = this.add.text(16, 16, 'Score : 0', {
     fontSize: '32px', fill: '#fff'
   });
   bombs = this.physics.add.group();
-  this.physics.add.collider(bombs, platforms);
-  this.physics.add.collider(player, bombs, hitBomb, null, this);
   dropBomb();
+  initAllCollisions(this, player, platforms, mummy, bombs, coins, collectStar, hitBomb);
   
-  $.getJSON(MAPDATA_ROUTE)
-  .done(res => {
-    let resPlatforms = res.platforms;
-    if (resPlatforms !== undefined && resPlatforms.length > 0){
-      resPlatforms.forEach(function (platformData) {
-        singularPlatform = platforms.create(platformData.x, platformData.y, 'ground');
-        singularPlatform.displayWidth = platformData.width;
-        singularPlatform.displayHeight = platformData.height;
-        singularPlatform.refreshBody();
-      })
-    }else{
-      renderPlatforms();
-    }
-  })
-  .fail(err => console.warn(err))
-
+  setPlatforms();
 }
-
-function dropStars(scene){
-  stars.clear(true);
-  bombs.clear(true);
-  stars = scene.physics.add.group({
+function setPlatforms(){
+  $.getJSON(MAPDATA_ROUTE)
+    .done(res => {
+      let resPlatforms = res.platforms;
+      if (resPlatforms !== undefined && resPlatforms.length > 0) {
+        resPlatforms.forEach(function (platformData) {
+          singularPlatform = platforms.create(platformData.x, platformData.y, 'ground');
+          singularPlatform.displayWidth = platformData.width;
+          singularPlatform.displayHeight = platformData.height;
+          singularPlatform.refreshBody();
+        })
+      } else {
+        renderPlatforms();
+      }
+    })
+    .fail(err => console.warn(err))
+}
+function initMummyWalk(scene){
+  scene.anims.create({
+    key: 'walk',
+    frames: scene.anims.generateFrameNumbers('mummy', { start: 0, end: 17 }),
+    framerate: 10,
+    repeat: -1
+  });
+}
+function initCoinSpin(scene){
+  scene.anims.create({
+    key: 'spin',
+    frames: scene.anims.generateFrameNumbers('star', { start: 0, end: 5 }),
+    frameRate: 10,
+    repeat: -1
+  });
+}
+function initAllCollisions(scene, player, platforms, mummy, bombs, coins, coinCollideFunc, bombCollideFunc){
+  scene.physics.add.collider(coins, platforms);
+  scene.physics.add.overlap(player, coins, coinCollideFunc, null, scene);
+  scene.physics.add.collider(bombs, platforms);
+  scene.physics.add.collider(player, bombs, bombCollideFunc, null, scene);
+  scene.physics.add.collider(player, platforms);
+  scene.physics.add.collider(mummy, player);
+}
+function initCoins(scene){
+  coins = scene.physics.add.group({
     key: 'star',
     repeat: 11,
     setXY: { x: 12, y: 0, stepX: 70 }
   });
-  stars.children.iterate(function (child) {
+  coins.children.iterate(function (child) {
+    child.setBounceY(Phaser.Math.FloatBetween(0.4, 0.8));
+  });
+}
+function initPlatforms(scene){
+  platforms = scene.physics.add.staticGroup();
+  platforms.create(400, 568, 'ground').setScale(2).refreshBody();
+}
+function initPlayer(scene){
+  player = scene.physics.add.sprite(100, 450, 'dude');
+  player.setBounce(0.2);
+  player.setCollideWorldBounds(true);
+  player.body.setGravityY(200);
+}
+function initMummyFollow(scene){
+    // Just leave this here research it later
+  // might be the ticket to having a real enemy
+  let graphics = scene.add.graphics();
+  // = == ==== = == == = ==== = == === = == = 
+  path = scene.add.path(700, 513);
+  path.lineTo(100, 513);
+  path.lineTo(700, 513);
+  mummy = scene.add.follower(path, 700, 513, 'mummy').startFollow({
+    duration: 8000,
+    loop: -1
+  });
+  return mummy;
+}
+function initPlayerAnims(scene){
+  scene.anims.create({
+    key: 'left',
+    frames: scene.anims.generateFrameNumbers('dude', { start: 0, end: 3 }),
+    frameRate: 10,
+    repeat: -1
+  });
+  scene.anims.create({
+    key: 'turn',
+    frames: [{ key: 'dude', frame: 4 }],
+    frameRate: 20
+  });
+  scene.anims.create({
+    key: 'right',
+    frames: scene.anims.generateFrameNumbers('dude', { start: 5, end: 8 }),
+    frameRate: 10,
+    repeat: -1
+  });
+}
+function dropStars(scene){
+  coins.clear(true);
+  bombs.clear(true);
+  coins = scene.physics.add.group({
+    key: 'star',
+    repeat: 11,
+    setXY: { x: 12, y: 0, stepX: 70 }
+  });
+  coins.children.iterate(function (child) {
     child.setBounceY(Phaser.Math.FloatBetween(0.4, 0.8));
   });
 
-  scene.physics.add.collider(stars, platforms);
-  scene.physics.add.overlap(player, stars, collectStar, null, this);
+  scene.physics.add.collider(coins, platforms);
+  scene.physics.add.overlap(player, coins, collectStar, null, this);
 
   dropBomb();
 }
@@ -199,14 +221,14 @@ function update() {
     }
   })
 
-  stars.children.iterate(function(child){
+  coins.children.iterate(function(child){
     child.anims.play('spin', true)
   })
 
   mummy.anims.play('walk', true);
 }
 
-function startPlayerMovement() {
+function startPlayerMovement(jumpCount = 0) {
   if (cursors.left.isDown) {
     player.setVelocityX(-160);
     player.anims.play('left', true);
@@ -231,13 +253,17 @@ function startPlayerMovement() {
   }
 }
 
+function doubleJump(){
+
+}
+
 function collectStar(player, star) {
   star.disableBody(true, true);
   score += 10;
   scoreText.setText('Score: ' + score);
 
-  if (stars.countActive(true) === 0) {
-    stars.children.iterate(function (child) {
+  if (coins.countActive(true) === 0) {
+    coins.children.iterate(function (child) {
       child.enableBody(true, child.x, 0, true, true);
     });
     dropBomb();
@@ -247,9 +273,6 @@ function collectStar(player, star) {
 function onGameover(scene){
   const GAMEOVER_FEEDBACK_TEXT = "GAMEOVER! 😭"
   const X_OFFSET = 50;
-  // const Y_OFFSET = 20;
-  // const CENTER_X = (WIDTH / 2) - (GAMEOVER_FEEDBACK_TEXT.length / 2) - X_OFFSET
-  // const CENTER_Y = (HEIGHT / 2) - (GAMEOVER_FEEDBACK_TEXT.length / 2) + Y_OFFSET
   const CENTER_X = (WIDTH / 2) - X_OFFSET
   const CENTER_Y = HEIGHT / 2;
   const text = scene.add.text(CENTER_X, CENTER_Y, GAMEOVER_FEEDBACK_TEXT, {
@@ -266,7 +289,8 @@ function onGameover(scene){
   gameover = true
 }
 /* 
-  psuedoRestart 
+  psuedoRestart needs to be called instead of restart the scene (the game)
+  other wise the map gets re-rendered in different coordinates.
 */
 function psuedoRestart(scene, gameoverText){
   score = 0;
@@ -335,7 +359,7 @@ function renderPlatforms(){
         if (!Phaser.Geom.Intersects.RectangleToRectangle(currentPlatform, previousPlatform)) {
           useable = true;
         }else{
-          failureCount++;
+          failureCount++; 
           if (failureCount > 10) {
             break;
           }
