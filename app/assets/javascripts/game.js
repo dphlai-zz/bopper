@@ -13,11 +13,9 @@ let config = {
   scale: {
     parent: 'CanvasDiv',
     mode: Phaser.Scale.FIT,
-    autoCenter: Phaser.Scale.CENTER_BOTH,
+    
+    autoCenter: Phaser.Scale.CENTER_HORIZONTAL,
     isPortrait: true
-  },
-  dom: {
-    createContainer: true
   },
   physics: {
     default: 'arcade',
@@ -226,7 +224,6 @@ function collectStar(player, star) {
     stars.children.iterate(function (child) {
       child.enableBody(true, child.x, 0, true, true);
     });
-
     dropBomb();
   }
 }
@@ -241,6 +238,9 @@ function onGameover(scene){
   const CENTER_Y = HEIGHT / 2;
   const text = scene.add.text(CENTER_X, CENTER_Y, GAMEOVER_FEEDBACK_TEXT, {
     fontSize: '18px', fill: '#fff'
+  })
+  $.post(SCORE_ROUTE, score, function(res){
+    
   })
   setTimeout(function () {
     psuedoRestart(scene, text);
