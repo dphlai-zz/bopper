@@ -37,7 +37,7 @@ let game = new Phaser.Game(config);
 let rows;
 
 function preload() {
-  this.load.image('sky', 'assets/sky.png');
+  this.load.image('sky', 'assets/background.png');
   this.load.image('ground', 'assets/platform.png');
   this.load.image('bomb', 'assets/bomb.png');
   this.load.spritesheet('star',
@@ -125,7 +125,7 @@ function create() {
   this.physics.add.collider(stars, platforms);
   this.physics.add.overlap(player, stars, collectStar, null, this);
   scoreText = this.add.text(16, 16, 'Score : 0', {
-    fontSize: '32px', fill: '#000'
+    fontSize: '32px', fill: '#fff'
   });
   bombs = this.physics.add.group();
   this.physics.add.collider(bombs, platforms);
@@ -230,7 +230,7 @@ function onGameover(scene){
   const CENTER_X = (WIDTH / 2) - X_OFFSET
   const CENTER_Y = HEIGHT / 2;
   const text = scene.add.text(CENTER_X, CENTER_Y, GAMEOVER_FEEDBACK_TEXT, {
-    fontSize: '18px', fill: '#000'
+    fontSize: '18px', fill: '#fff'
   })
   setTimeout(function () {
     psuedoRestart(scene, text);
@@ -246,7 +246,7 @@ function psuedoRestart(scene, gameoverText){
   gameoverText.destroy();
   scoreText.destroy();
   scoreText = scene.add.text(16, 16, 'Score : 0', {
-    fontSize: '32px', fill: '#000'
+    fontSize: '32px', color: '#fff'
   });
 }
 
@@ -345,15 +345,15 @@ function renderPlatforms(){
     }
   })
 
-  /* 
-    After the platforms are created post there data to the back end 
+  /*
+    After the platforms are created post there data to the back end
     use the platforms.children.iterate function get there distinct
-    values. 
+    values.
 
-    width : child.width, height : child.height, 
+    width : child.width, height : child.height,
     x : child.x, y : child.y
 
-    push each iteration into an array 
+    push each iteration into an array
     and post the array.
   */
 
