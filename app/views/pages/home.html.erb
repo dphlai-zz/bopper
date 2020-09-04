@@ -1,6 +1,7 @@
 <% if @current_user.present? %>
   <div class="highscore">
-    Your highest score: <%= @current_user.scores.pluck(:highscore).max %>
+    Your highest score: <%= @highscore %> 
+    <button id="new-map">Create New Map</button>
   </div>
   <%= javascript_include_tag 'game' %>
 <% else %>

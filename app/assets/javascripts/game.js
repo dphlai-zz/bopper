@@ -3,6 +3,7 @@ const HEIGHT = 600;
 const Y_GRAVITY = 300;
 const ENEMY_VELOCITY = 50;
 
+const HIGHSCORE_ROUTE = '/'
 const SCORE_ROUTE = '/scores'
 const MAPDATA_ROUTE = '/mapdata'
 const POST_PLATFORM_ROUTE = '/platforms'
@@ -59,6 +60,7 @@ let jumpCount = 0;
 let platforms;
 let player;
 let mummy;
+let scene; 
 let score = 0;
 let scoreText;
 let bombs;
@@ -74,6 +76,7 @@ function create() {
   cursors = this.input.keyboard.createCursorKeys();
   initCoinSpin(this)
   initMummyWalk(this)
+  scene = this
   scoreText = this.add.text(16, 16, 'Score : 0', {
     fontSize: '32px', fill: '#fff'
   });
@@ -213,7 +216,7 @@ function update() {
 function spinCoins(){
   coins.children.iterate(function (child) {
     child.anims.play('spin', true)
-  })
+  });
 }
 function initBombFollow(scene){
   physics = scene.physics
@@ -231,7 +234,7 @@ function initBombFollow(scene){
     }
   })
 }
-function startPlayerMovement(jumpCount = 0) {
+function startPlayerMovement() {
   if (cursors.left.isDown) {
     player.setVelocityX(-160);
     player.anims.play('left', true);
@@ -298,7 +301,8 @@ function psuedoRestart(scene, gameoverText){
   score = 0;
   dropStars(scene);
   resetPlayer(scene);
-  gameoverText.destroy();
+  if(gameoverText !== undefined)
+    gameoverText.destroy();
   scoreText.destroy();
   scoreText = scene.add.text(16, 16, 'Score : 0', {
     fontSize: '32px', color: '#fff'
@@ -342,9 +346,8 @@ function renderPlatforms(){
   const ROW_COUNT = 10;
   let currentPlatform;
   let previousPlatform;
-
   const {dw, dh} = getPlatformDHDW(platforms)
-
+  platforms.clear(true)
   for (let r = 0; r < ROW_COUNT; r++) {
     /*
       Init these variables at the top of the loop 
@@ -446,3 +449,12 @@ function getPlatformDHDW(platforms){
 function getNextArrayItem(array = [], index){
   return array[(index + 1) % array.length]
 }
+
+
+$(document).ready(function(){
+  $("#new-map").on("click", function(){
+    renderPlatforms();
+    scene.scene.restart();
+    location.reload();
+  })
+})
