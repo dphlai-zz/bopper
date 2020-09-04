@@ -67,7 +67,7 @@ let coins;
 function create() {
   this.add.image(400, 300, 'sky');
   initPlatforms(this)
-  initPlayer(this);
+  player = initPlayer(this);
   initPlayerAnims(this);
   mummy = initMummyFollow(this);
   initCoins(this);
@@ -142,6 +142,8 @@ function initPlayer(scene){
   player.setBounce(0.2);
   player.setCollideWorldBounds(true);
   player.body.setGravityY(200);
+
+  return player
 }
 function initMummyFollow(scene){
     // Just leave this here research it later
@@ -204,12 +206,31 @@ function resetPlayer(scene){
 }
 function update() {
   startPlayerMovement();
-  coins.children.iterate(function(child){
-    child.anims.play('spin', true)
-  })
+  initBombFollow(this);
+  spinCoins();
   mummy.anims.play('walk', true);
 }
-
+function spinCoins(){
+  coins.children.iterate(function (child) {
+    child.anims.play('spin', true)
+  })
+}
+function initBombFollow(scene){
+  physics = scene.physics
+  bombs.children.iterate(function (bomb) {
+    if (bomb.body.touching.left) {
+      bomb.setVelocityX(160);
+      physics.moveToObject(bomb, player, ENEMY_VELOCITY)
+    }
+    else if (bomb.body.touching.right) {
+      bomb.setVelocityX(-160);
+      physics.moveToObject(bomb, player, ENEMY_VELOCITY)
+    }
+    else {
+      physics.moveToObject(bomb, player, ENEMY_VELOCITY)
+    }
+  })
+}
 function startPlayerMovement(jumpCount = 0) {
   if (cursors.left.isDown) {
     player.setVelocityX(-160);
