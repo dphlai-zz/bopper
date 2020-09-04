@@ -15,7 +15,7 @@ let config = {
   scale: {
     parent: 'CanvasDiv',
     mode: Phaser.Scale.FIT,
-    
+
     autoCenter: Phaser.Scale.CENTER_HORIZONTAL,
     isPortrait: true
   },
@@ -60,7 +60,7 @@ let jumpCount = 0;
 let platforms;
 let player;
 let mummy;
-let scene; 
+let scene;
 let score = 0;
 let scoreText;
 let bombs;
@@ -152,7 +152,7 @@ function initMummyFollow(scene){
     // Just leave this here research it later
   // might be the ticket to having a real enemy
   let graphics = scene.add.graphics();
-  // = == ==== = == == = ==== = == === = == = 
+  // = == ==== = == == = ==== = == === = == =
   path = scene.add.path(700, 513);
   path.lineTo(100, 513);
   path.lineTo(700, 513);
@@ -294,7 +294,7 @@ function onGameover(scene){
 
   gameover = true
 }
-/* 
+/*
   psuedoRestart needs to be called instead of restart the scene (the game)
   other wise the map gets re-rendered in different coordinates.
 */
@@ -337,7 +337,7 @@ Notes:
         platform sprites display width so I need to feed the rectangle instances width
         with those values
     2a. Failure count doesnt seem to do much.
-    3a. ROW_COUNT doesnt seem to do much either. 
+    3a. ROW_COUNT doesnt seem to do much either.
     4a. Test everything when we get the chance.
 */
 
@@ -351,17 +351,17 @@ function renderPlatforms(){
   platforms.clear(true)
   for (let r = 0; r < ROW_COUNT; r++) {
     /*
-      Init these variables at the top of the loop 
+      Init these variables at the top of the loop
       so they get reset through every iteration.
 
-      +1 to r so that it skips the first row 
+      +1 to r so that it skips the first row
     */
     let failureCount = 0;
     const y = (r + 1) * dh;
     let useable = false;
     while (!useable) {
       const randX = generateRandXY().x;
-      // Checking to make sure no platform get's placed 
+      // Checking to make sure no platform get's placed
       // on the fixed bottom platform
       if(isChoppedBottomRow(y, dh)){
         currentPlatform = new Phaser.Geom.Rectangle(randX, y, dw, dh);
@@ -374,7 +374,7 @@ function renderPlatforms(){
         if (!Phaser.Geom.Intersects.RectangleToRectangle(currentPlatform, previousPlatform)) {
           useable = true;
         }else{
-          failureCount++; 
+          failureCount++;
           if (failureCount > 10) {
             break;
           }
@@ -453,7 +453,7 @@ function getNextArrayItem(array = [], index){
 
 
 $(document).ready(function(){
-  $("#new-map").on("click", function(){
+  $("#map-button").on("click", function(){
     renderPlatforms();
     scene.scene.restart();
     location.reload();

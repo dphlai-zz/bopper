@@ -1,7 +1,9 @@
 <% if @current_user.present? %>
   <div class="highscore">
-    Your highest score: <%= @highscore %> 
-    <button id="new-map">Create New Map</button>
+    Your highest score: <%= @highscore %>
+  </div>
+  <div class="new-map">
+    <button id="map-button">GENERATE NEW MAP!</button>
   </div>
   <%= javascript_include_tag 'game' %>
 <% else %>
