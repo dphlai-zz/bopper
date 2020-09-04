@@ -354,6 +354,7 @@ function renderPlatforms(){
   let previousPlatform;
   const {dw, dh} = getPlatformDHDW(platforms)
   platforms.clear(true)
+  platforms.create(400, 568, 'ground').setScale(2).refreshBody();
   for (let r = 0; r < ROW_COUNT; r++) {
     /*
       Init these variables at the top of the loop
