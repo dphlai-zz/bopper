@@ -45,7 +45,7 @@ function preload() {
     {frameWidth: 32, frameHeight: 32}
   );
   this.load.spritesheet('dude',
-    'assets/dude.png',
+    'assets/character.png',
     { frameWidth: 32, frameHeight: 48 }
   );
 
