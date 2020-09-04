@@ -22,7 +22,6 @@ class UsersController < ApplicationController
   end # edit
 
   def update
-
     @current_user.update user_params
     redirect_to root_path
   end # update
