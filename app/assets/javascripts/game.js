@@ -55,7 +55,7 @@ function preload() {
 
 }
 
-
+let jumpCount = 0;
 let platforms;
 let player;
 let mummy;
@@ -80,7 +80,6 @@ function create() {
   bombs = this.physics.add.group();
   dropBomb();
   initAllCollisions(this, player, platforms, mummy, bombs, coins, collectStar, hitBomb);
-  
   setPlatforms();
 }
 function setPlatforms(){
@@ -205,26 +204,9 @@ function resetPlayer(scene){
 }
 function update() {
   startPlayerMovement();
-  console.log(Phaser.Input.Keyboard.JustDown(cursors.up.isUp));
-  let physics = this.physics
-  bombs.children.iterate(function (bomb) {
-    if (bomb.body.touching.left) {
-      bomb.setVelocityX(160);
-      physics.moveToObject(bomb, player, ENEMY_VELOCITY)
-    }
-    else if (bomb.body.touching.right) {
-      bomb.setVelocityX(-160);
-      physics.moveToObject(bomb, player, ENEMY_VELOCITY)
-    }
-    else {
-      physics.moveToObject(bomb, player, ENEMY_VELOCITY)
-    }
-  })
-
   coins.children.iterate(function(child){
     child.anims.play('spin', true)
   })
-
   mummy.anims.play('walk', true);
 }
 
@@ -241,20 +223,19 @@ function startPlayerMovement(jumpCount = 0) {
     player.setVelocityX(0);
     player.anims.play('turn');
   }
+  doubleJump();
+}
 
+function doubleJump(){
   const isJumpJustDown = Phaser.Input.Keyboard.JustDown(this.cursors.up)
   if (isJumpJustDown && (player.body.touching.down || jumpCount < 2)) {
     player.setVelocityY(-400)
     jumpCount++;
 
-    if ( jumpCount > 2){
+    if (jumpCount > 2) {
       jumpCount = 0;
     }
   }
-}
-
-function doubleJump(){
-
 }
 
 function collectStar(player, star) {
@@ -329,7 +310,9 @@ Notes:
     1a. The width of the generated rectangle doesnt compare the changing
         platform sprites display width so I need to feed the rectangle instances width
         with those values
-    2a. Failure count doesnt seem to do much
+    2a. Failure count doesnt seem to do much.
+    3a. ROW_COUNT doesnt seem to do much either. 
+    4a. Test everything when we get the chance.
 */
 
 function renderPlatforms(){
@@ -342,13 +325,20 @@ function renderPlatforms(){
   const {dw, dh} = getPlatformDHDW(platforms)
 
   for (let r = 0; r < ROW_COUNT; r++) {
+    /*
+      Init these variables at the top of the loop 
+      so they get reset through every iteration.
 
+      +1 to r so that it skips the first row 
+    */
     let failureCount = 0;
     const y = (r + 1) * dh;
     let useable = false;
     while (!useable) {
       const randX = generateRandXY().x;
-      if(y < HEIGHT - (dh * 2)){
+      // Checking to make sure no platform get's placed 
+      // on the fixed bottom platform
+      if(isChoppedBottomRow(y, dh)){
         currentPlatform = new Phaser.Geom.Rectangle(randX, y, dw, dh);
         previousPlatform = platformRows[r - 1];
       }
@@ -380,46 +370,43 @@ function renderPlatforms(){
     based on rectangle coords above. Also generates random
     widths
   */
+  createAllPlatforms(platformRows)
+  postPlatformData();
+
+  return platformRows
+}
+function createAllPlatforms(platformRows){
   platformRows.forEach(function (rectangle) {
     let plat;
-    if (rectangle != null){
+    if (rectangle != null) {
       plat = platforms.create(rectangle.x, rectangle.y, 'ground');
     }
-    if(plat !== undefined){
+    if (plat !== undefined) {
       plat.displayWidth = Phaser.Math.Between(100, 300);
       plat.refreshBody();
     }
   })
 
-  /*
-    After the platforms are created post there data to the back end
-    use the platforms.children.iterate function get there distinct
-    values.
-
-    width : child.width, height : child.height,
-    x : child.x, y : child.y
-
-    push each iteration into an array
-    and post the array.
-  */
-
+}
+function postPlatformData(){
   let platformData = []
-  platforms.children.iterate(function(child){
-      platformData.push({
-        width : child.displayWidth,
-        height : child.displayHeight,
-        x : child.x,
-        y : child.y
-      })
+  platforms.children.iterate(function (child) {
+    platformData.push({
+      width: child.displayWidth,
+      height: child.displayHeight,
+      x: child.x,
+      y: child.y
+    })
   })
-  $.post(POST_PLATFORM_ROUTE, {platforms : JSON.stringify(platformData)}, function(res){
+  $.post(POST_PLATFORM_ROUTE, { platforms: JSON.stringify(platformData) }, function (res) {
     console.log(res);
   }, 'json')
-  .fail(err => console.warn(err));
-
-  return platformRows
+    .fail(err => console.warn(err)
+  );
 }
-
+function isChoppedBottomRow(yAxis, floorPlatformHeight){
+  return yAxis < (HEIGHT - floorPlatformHeight * 2)
+}
 /*
   Gets platform sprite display height and
   display width.
