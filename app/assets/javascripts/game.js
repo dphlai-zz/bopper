@@ -213,6 +213,11 @@ function update() {
   spinCoins();
   mummy.anims.play('walk', true);
 
+  // let bombToDestroy = bombs.get()[Phaser.Math.Between(0, bombs.get().length - 1)]
+
+  // if (Math.random() > 0.8){
+  //   bombs.remove(bombToDestroy, true, true)
+  // }
 }
 function spinCoins(){
   coins.children.iterate(function (child) {
