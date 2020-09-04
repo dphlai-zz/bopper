@@ -1,6 +1,6 @@
 class PlatformsController < ApplicationController
   skip_before_action :verify_authenticity_token
-
+  before_action :check_if_logged_in
   def create
     users_map = Map.where :user_id => @current_user.id
     if users_map.present?

@@ -213,7 +213,6 @@ function update() {
   spinCoins();
   mummy.anims.play('walk', true);
 
-  b
 }
 function spinCoins(){
   coins.children.iterate(function (child) {
