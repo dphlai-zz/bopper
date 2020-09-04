@@ -289,8 +289,8 @@ function onGameover(scene){
   const text = scene.add.text(CENTER_X, CENTER_Y, GAMEOVER_FEEDBACK_TEXT, {
     fontSize: '18px', fill: '#fff'
   })
-  $.post(SCORE_ROUTE, {score}, function(res){
-    console.log(res);
+  $.post(SCORE_ROUTE, {score}, function(){
+    console.log("Post successful");
   })
   .fail(err => console.warn(err))
   setTimeout(function () {
