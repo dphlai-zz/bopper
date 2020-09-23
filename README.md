@@ -1,24 +1,20 @@
-# README
+# Bopper
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+Boing boing boing! Welcome to Bopper.
 
-Things you may want to cover:
+Collect coins and avoid the evil space baddies!
 
-* Ruby version
+<h2>Link</h2>
 
-* System dependencies
+https://ancient-mountain-23944.herokuapp.com/
 
-* Configuration
+<h2>Features</h2>
 
-* Database creation
+* Users must sign up in order to play
 
-* Database initialization
+* User high score record is recorded and displayed above the game
 
-* How to run the test suite
+* Bored of the current map? Simply hit 'Generate New Map!' to produce a new game layout
 
-* Services (job queues, cache servers, search engines, etc.)
+This project has been built in Ruby on Rails, leveraging Phaser.js, a 2D game framework for making HTML5 games.
 
-* Deployment instructions
-
-* ...
