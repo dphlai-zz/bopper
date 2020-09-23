@@ -16,5 +16,5 @@ https://ancient-mountain-23944.herokuapp.com/
 
 * Bored of the current map? Simply hit 'Generate New Map!' to produce a new game layout
 
-This project has been built in Ruby on Rails, leveraging Phaser.js, a 2D game framework for making HTML5 games.
+This project has been built in Ruby on Rails leveraging Phaser.js, a 2D game framework for making HTML5 games.
 
