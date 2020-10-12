@@ -262,7 +262,7 @@ function doubleJump(){
     player.setVelocityY(-400)
     jumpCount++;
 
-    if (jumpCount > 2) {
+    if (jumpCount => 2) {
       jumpCount = 0;
     }
   }
